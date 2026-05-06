@@ -1385,6 +1385,35 @@ dependencies = [
 ]
 
 [[package]]
+name = "thirdpass-lib"
+version = "0.3.1"
+dependencies = [
+ "anyhow",
+ "env_logger",
+ "log",
+ "reqwest 0.11.27",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "structopt",
+ "url",
+]
+
+[[package]]
+name = "thirdpass-rs"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "reqwest 0.10.10",
+ "serde",
+ "serde_json",
+ "structopt",
+ "tempdir",
+ "thirdpass-lib",
+ "url",
+]
+
+[[package]]
 name = "tinystr"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1582,35 +1611,6 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
-
-[[package]]
-name = "vouch-lib"
-version = "0.3.1"
-dependencies = [
- "anyhow",
- "env_logger",
- "log",
- "reqwest 0.11.27",
- "serde",
- "serde_json",
- "serde_yaml",
- "structopt",
- "url",
-]
-
-[[package]]
-name = "vouch-rs"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "reqwest 0.10.10",
- "serde",
- "serde_json",
- "structopt",
- "tempdir",
- "url",
- "vouch-lib",
-]
 
 [[package]]
 name = "want"

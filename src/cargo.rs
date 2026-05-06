@@ -17,7 +17,7 @@ pub struct FileDefinedDependencySet {
     pub path: std::path::PathBuf,
 
     /// Resolved crates.io dependencies.
-    pub dependencies: Vec<vouch_lib::extension::Dependency>,
+    pub dependencies: Vec<thirdpass_lib::extension::Dependency>,
 }
 
 #[derive(Debug, Clone)]
@@ -71,10 +71,10 @@ pub fn get_file_defined_dependencies(
 pub fn get_package_dependencies(
     package_name: &str,
     package_version: &str,
-) -> Result<Vec<vouch_lib::extension::Dependency>> {
+) -> Result<Vec<thirdpass_lib::extension::Dependency>> {
     validate_crate_name(package_name)?;
 
-    let tmp_dir = tempdir::TempDir::new("vouch_rs_identify_package_dependencies")?;
+    let tmp_dir = tempdir::TempDir::new("thirdpass_rs_identify_package_dependencies")?;
     let manifest_path = write_probe_project(tmp_dir.path(), package_name, package_version)?;
     let metadata = match run_cargo_metadata(&manifest_path, false) {
         Ok(metadata) => metadata,
@@ -163,7 +163,7 @@ fn write_probe_project(
     let manifest_path = directory.join(CARGO_MANIFEST_FILE_NAME);
     let manifest = format!(
         "[package]\n\
-         name = \"vouch-rs-dependency-probe\"\n\
+         name = \"thirdpass-rs-dependency-probe\"\n\
          version = \"0.0.0\"\n\
          edition = \"2018\"\n\
          publish = false\n\
@@ -181,7 +181,7 @@ fn write_probe_project(
 fn crates_io_dependencies_from_metadata(
     metadata: &CargoMetadata,
     target: Option<&TargetPackage>,
-) -> Vec<vouch_lib::extension::Dependency> {
+) -> Vec<thirdpass_lib::extension::Dependency> {
     let mut dependencies = BTreeSet::new();
     for package in &metadata.packages {
         if !package
@@ -199,7 +199,7 @@ fn crates_io_dependencies_from_metadata(
             continue;
         }
 
-        dependencies.insert(vouch_lib::extension::Dependency {
+        dependencies.insert(thirdpass_lib::extension::Dependency {
             name: package.name.clone(),
             version: Ok(package.version.clone()),
         });
@@ -301,7 +301,7 @@ mod tests {
 
     #[test]
     fn find_manifest_walks_up_from_child_directory() -> Result<()> {
-        let tmp_dir = tempdir::TempDir::new("vouch_rs_manifest_test")?;
+        let tmp_dir = tempdir::TempDir::new("thirdpass_rs_manifest_test")?;
         let child = tmp_dir.path().join("src").join("nested");
         std::fs::create_dir_all(&child)?;
         std::fs::write(tmp_dir.path().join(CARGO_MANIFEST_FILE_NAME), "[package]\n")?;

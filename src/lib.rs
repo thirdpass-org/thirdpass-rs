@@ -10,7 +10,7 @@ pub struct RsExtension {
     registry_host_names_: Vec<String>,
 }
 
-impl vouch_lib::extension::FromLib for RsExtension {
+impl thirdpass_lib::extension::FromLib for RsExtension {
     fn new() -> Self {
         Self {
             name_: "rs".to_string(),
@@ -19,7 +19,7 @@ impl vouch_lib::extension::FromLib for RsExtension {
     }
 }
 
-impl vouch_lib::extension::Extension for RsExtension {
+impl thirdpass_lib::extension::Extension for RsExtension {
     fn name(&self) -> String {
         self.name_.clone()
     }
@@ -34,14 +34,14 @@ impl vouch_lib::extension::Extension for RsExtension {
         package_name: &str,
         package_version: &Option<&str>,
         _extension_args: &Vec<String>,
-    ) -> Result<Vec<vouch_lib::extension::PackageDependencies>> {
+    ) -> Result<Vec<thirdpass_lib::extension::PackageDependencies>> {
         let package_version = match package_version {
             Some(version) => version.to_string(),
             None => get_latest_version(package_name)?
                 .ok_or(format_err!("Failed to find latest package version."))?,
         };
         let dependencies = cargo::get_package_dependencies(package_name, &package_version)?;
-        Ok(vec![vouch_lib::extension::PackageDependencies {
+        Ok(vec![thirdpass_lib::extension::PackageDependencies {
             package_version: Ok(package_version),
             registry_host_name: cargo::get_registry_host_name(),
             dependencies,
@@ -52,13 +52,13 @@ impl vouch_lib::extension::Extension for RsExtension {
         &self,
         working_directory: &std::path::PathBuf,
         _extension_args: &Vec<String>,
-    ) -> Result<Vec<vouch_lib::extension::FileDefinedDependencies>> {
+    ) -> Result<Vec<thirdpass_lib::extension::FileDefinedDependencies>> {
         let dependency_set = match cargo::get_file_defined_dependencies(working_directory)? {
             Some(dependency_set) => dependency_set,
             None => return Ok(Vec::new()),
         };
 
-        Ok(vec![vouch_lib::extension::FileDefinedDependencies {
+        Ok(vec![thirdpass_lib::extension::FileDefinedDependencies {
             path: dependency_set.path,
             registry_host_name: cargo::get_registry_host_name(),
             dependencies: dependency_set.dependencies,
@@ -69,7 +69,7 @@ impl vouch_lib::extension::Extension for RsExtension {
         &self,
         package_name: &str,
         package_version: &Option<&str>,
-    ) -> Result<Vec<vouch_lib::extension::RegistryPackageMetadata>> {
+    ) -> Result<Vec<thirdpass_lib::extension::RegistryPackageMetadata>> {
         let entry_json = get_registry_entry_json(package_name)?;
         let package_version = match package_version {
             Some(version) => {
@@ -96,7 +96,7 @@ impl vouch_lib::extension::Extension for RsExtension {
         let human_url = get_registry_human_url(package_name, &package_version)?;
         let artifact_url = get_archive_url(package_name, &package_version)?;
 
-        Ok(vec![vouch_lib::extension::RegistryPackageMetadata {
+        Ok(vec![thirdpass_lib::extension::RegistryPackageMetadata {
             registry_host_name,
             human_url: human_url.to_string(),
             artifact_url: artifact_url.to_string(),
@@ -137,7 +137,7 @@ fn registry_entry_has_version(registry_entry_json: &serde_json::Value, version: 
 fn get_registry_entry_json(package_name: &str) -> Result<serde_json::Value> {
     let url = format!("https://crates.io/api/v1/crates/{}", package_name);
     let client = reqwest::blocking::Client::builder()
-        .user_agent(format!("vouch-rs/{}", env!("CARGO_PKG_VERSION")))
+        .user_agent(format!("thirdpass-rs/{}", env!("CARGO_PKG_VERSION")))
         .build()?;
     let mut result = client.get(&url).send()?.error_for_status()?;
     let mut body = String::new();
