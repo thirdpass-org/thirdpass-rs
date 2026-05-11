@@ -17,7 +17,7 @@ pub struct FileDefinedDependencySet {
     pub path: std::path::PathBuf,
 
     /// Resolved crates.io dependencies.
-    pub dependencies: Vec<thirdpass_lib::extension::Dependency>,
+    pub dependencies: Vec<thirdpass_core::extension::Dependency>,
 }
 
 #[derive(Debug, Clone)]
@@ -71,7 +71,7 @@ pub fn get_file_defined_dependencies(
 pub fn get_package_dependencies(
     package_name: &str,
     package_version: &str,
-) -> Result<Vec<thirdpass_lib::extension::Dependency>> {
+) -> Result<Vec<thirdpass_core::extension::Dependency>> {
     validate_crate_name(package_name)?;
 
     let tmp_dir = tempdir::TempDir::new("thirdpass_rs_identify_package_dependencies")?;
@@ -181,7 +181,7 @@ fn write_probe_project(
 fn crates_io_dependencies_from_metadata(
     metadata: &CargoMetadata,
     target: Option<&TargetPackage>,
-) -> Vec<thirdpass_lib::extension::Dependency> {
+) -> Vec<thirdpass_core::extension::Dependency> {
     let mut dependencies = BTreeSet::new();
     for package in &metadata.packages {
         if !package
@@ -199,7 +199,7 @@ fn crates_io_dependencies_from_metadata(
             continue;
         }
 
-        dependencies.insert(thirdpass_lib::extension::Dependency {
+        dependencies.insert(thirdpass_core::extension::Dependency {
             name: package.name.clone(),
             version: Ok(package.version.clone()),
         });

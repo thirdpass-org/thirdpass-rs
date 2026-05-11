@@ -10,7 +10,7 @@ pub struct RsExtension {
     registry_host_names_: Vec<String>,
 }
 
-impl thirdpass_lib::extension::FromLib for RsExtension {
+impl thirdpass_core::extension::FromLib for RsExtension {
     fn new() -> Self {
         Self {
             name_: "rs".to_string(),
@@ -19,7 +19,7 @@ impl thirdpass_lib::extension::FromLib for RsExtension {
     }
 }
 
-impl thirdpass_lib::extension::Extension for RsExtension {
+impl thirdpass_core::extension::Extension for RsExtension {
     fn name(&self) -> String {
         self.name_.clone()
     }
@@ -34,14 +34,14 @@ impl thirdpass_lib::extension::Extension for RsExtension {
         package_name: &str,
         package_version: &Option<&str>,
         _extension_args: &Vec<String>,
-    ) -> Result<Vec<thirdpass_lib::extension::PackageDependencies>> {
+    ) -> Result<Vec<thirdpass_core::extension::PackageDependencies>> {
         let package_version = match package_version {
             Some(version) => version.to_string(),
             None => get_latest_version(package_name)?
                 .ok_or(format_err!("Failed to find latest package version."))?,
         };
         let dependencies = cargo::get_package_dependencies(package_name, &package_version)?;
-        Ok(vec![thirdpass_lib::extension::PackageDependencies {
+        Ok(vec![thirdpass_core::extension::PackageDependencies {
             package_version: Ok(package_version),
             registry_host_name: cargo::get_registry_host_name(),
             dependencies,
@@ -52,13 +52,13 @@ impl thirdpass_lib::extension::Extension for RsExtension {
         &self,
         working_directory: &std::path::PathBuf,
         _extension_args: &Vec<String>,
-    ) -> Result<Vec<thirdpass_lib::extension::FileDefinedDependencies>> {
+    ) -> Result<Vec<thirdpass_core::extension::FileDefinedDependencies>> {
         let dependency_set = match cargo::get_file_defined_dependencies(working_directory)? {
             Some(dependency_set) => dependency_set,
             None => return Ok(Vec::new()),
         };
 
-        Ok(vec![thirdpass_lib::extension::FileDefinedDependencies {
+        Ok(vec![thirdpass_core::extension::FileDefinedDependencies {
             path: dependency_set.path,
             registry_host_name: cargo::get_registry_host_name(),
             dependencies: dependency_set.dependencies,
@@ -69,7 +69,7 @@ impl thirdpass_lib::extension::Extension for RsExtension {
         &self,
         package_name: &str,
         package_version: &Option<&str>,
-    ) -> Result<Vec<thirdpass_lib::extension::RegistryPackageMetadata>> {
+    ) -> Result<Vec<thirdpass_core::extension::RegistryPackageMetadata>> {
         let entry_json = get_registry_entry_json(package_name)?;
         let package_version = match package_version {
             Some(version) => {
@@ -96,7 +96,7 @@ impl thirdpass_lib::extension::Extension for RsExtension {
         let human_url = get_registry_human_url(package_name, &package_version)?;
         let artifact_url = get_archive_url(package_name, &package_version)?;
 
-        Ok(vec![thirdpass_lib::extension::RegistryPackageMetadata {
+        Ok(vec![thirdpass_core::extension::RegistryPackageMetadata {
             registry_host_name,
             human_url: human_url.to_string(),
             artifact_url: artifact_url.to_string(),

@@ -1385,7 +1385,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "thirdpass-lib"
+name = "thirdpass-core"
 version = "0.3.1"
 dependencies = [
  "anyhow",
@@ -1409,7 +1409,7 @@ dependencies = [
  "serde_json",
  "structopt",
  "tempdir",
- "thirdpass-lib",
+ "thirdpass-core",
  "url",
 ]
 
