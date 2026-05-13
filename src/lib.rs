@@ -28,6 +28,15 @@ impl thirdpass_core::extension::Extension for RsExtension {
         self.registry_host_names_.clone()
     }
 
+    fn review_target_policy(&self) -> thirdpass_core::extension::ReviewTargetPolicy {
+        thirdpass_core::extension::ReviewTargetPolicy {
+            excluded_exact_paths: vec![
+                ".cargo_vcs_info.json".to_string(),
+                "Cargo.lock".to_string(),
+            ],
+        }
+    }
+
     /// Returns resolved dependencies for a crates.io package release.
     fn identify_package_dependencies(
         &self,
@@ -163,6 +172,7 @@ fn get_archive_url(package_name: &str, package_version: &str) -> Result<url::Url
 #[cfg(test)]
 mod tests {
     use super::*;
+    use thirdpass_core::extension::{Extension, FromLib};
 
     #[test]
     fn latest_version_prefers_stable_version() {
@@ -204,5 +214,14 @@ mod tests {
             "https://static.crates.io/crates/serde/serde-1.0.0.crate"
         );
         Ok(())
+    }
+
+    #[test]
+    fn review_target_policy_skips_generated_cargo_metadata() {
+        let policy = RsExtension::new().review_target_policy();
+
+        assert!(policy.excludes_exact_path(".cargo_vcs_info.json"));
+        assert!(policy.excludes_exact_path("Cargo.lock"));
+        assert!(!policy.excludes_exact_path("Cargo.toml"));
     }
 }
