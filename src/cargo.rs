@@ -311,4 +311,41 @@ mod tests {
         assert_eq!(manifest_path, tmp_dir.path().join(CARGO_MANIFEST_FILE_NAME));
         Ok(())
     }
+
+    #[test]
+    fn file_defined_dependencies_resolve_current_project_from_child_directory() -> Result<()> {
+        let manifest_dir = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        let child = manifest_dir.join("src");
+
+        let dependency_set =
+            get_file_defined_dependencies(&child)?.expect("expected current Cargo project");
+
+        assert_eq!(dependency_set.path, manifest_dir.join(CARGO_LOCK_FILE_NAME));
+        assert!(
+            dependency_set
+                .dependencies
+                .iter()
+                .any(|dependency| dependency.name == "anyhow"
+                    && matches!(&dependency.version, Ok(version) if !version.is_empty())),
+            "expected resolved anyhow dependency in {:?}",
+            dependency_set.dependencies
+        );
+        assert!(
+            dependency_set
+                .dependencies
+                .iter()
+                .any(|dependency| dependency.name == "serde"
+                    && matches!(&dependency.version, Ok(version) if !version.is_empty())),
+            "expected resolved serde dependency in {:?}",
+            dependency_set.dependencies
+        );
+        assert!(
+            !dependency_set
+                .dependencies
+                .iter()
+                .any(|dependency| dependency.name == "thirdpass-core"),
+            "path dependencies should not be reported as crates.io dependencies"
+        );
+        Ok(())
+    }
 }
