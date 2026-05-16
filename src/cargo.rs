@@ -46,7 +46,7 @@ pub fn get_registry_host_name() -> String {
 
 /// Resolve dependencies defined by the nearest Cargo project.
 pub fn get_file_defined_dependencies(
-    working_directory: &std::path::PathBuf,
+    working_directory: &std::path::Path,
 ) -> Result<Option<FileDefinedDependencySet>> {
     let manifest_path = match find_manifest_path(working_directory) {
         Some(path) => path,
@@ -97,8 +97,8 @@ pub fn get_package_dependencies(
     ))
 }
 
-fn find_manifest_path(working_directory: &std::path::PathBuf) -> Option<std::path::PathBuf> {
-    let mut directory = working_directory.clone();
+fn find_manifest_path(working_directory: &std::path::Path) -> Option<std::path::PathBuf> {
+    let mut directory = working_directory.to_path_buf();
     loop {
         let manifest_path = directory.join(CARGO_MANIFEST_FILE_NAME);
         if manifest_path.is_file() {
@@ -112,17 +112,17 @@ fn find_manifest_path(working_directory: &std::path::PathBuf) -> Option<std::pat
 
 fn get_source_path(
     metadata: &CargoMetadata,
-    manifest_path: &std::path::PathBuf,
+    manifest_path: &std::path::Path,
 ) -> std::path::PathBuf {
     let lock_path = metadata.workspace_root.join(CARGO_LOCK_FILE_NAME);
     if lock_path.is_file() {
         lock_path
     } else {
-        manifest_path.clone()
+        manifest_path.to_path_buf()
     }
 }
 
-fn run_cargo_metadata(manifest_path: &std::path::PathBuf, locked: bool) -> Result<CargoMetadata> {
+fn run_cargo_metadata(manifest_path: &std::path::Path, locked: bool) -> Result<CargoMetadata> {
     let mut command = std::process::Command::new("cargo");
     command
         .arg("metadata")

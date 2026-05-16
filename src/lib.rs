@@ -42,7 +42,7 @@ impl thirdpass_core::extension::Extension for RsExtension {
         &self,
         package_name: &str,
         package_version: &Option<&str>,
-        _extension_args: &Vec<String>,
+        _extension_args: &[String],
     ) -> Result<Vec<thirdpass_core::extension::PackageDependencies>> {
         let package_version = match package_version {
             Some(version) => version.to_string(),
@@ -59,8 +59,8 @@ impl thirdpass_core::extension::Extension for RsExtension {
 
     fn identify_file_defined_dependencies(
         &self,
-        working_directory: &std::path::PathBuf,
-        _extension_args: &Vec<String>,
+        working_directory: &std::path::Path,
+        _extension_args: &[String],
     ) -> Result<Vec<thirdpass_core::extension::FileDefinedDependencies>> {
         let dependency_set = match cargo::get_file_defined_dependencies(working_directory)? {
             Some(dependency_set) => dependency_set,
