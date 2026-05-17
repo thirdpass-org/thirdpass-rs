@@ -152,7 +152,7 @@ fn get_registry_entry_json(package_name: &str) -> Result<serde_json::Value> {
     let mut body = String::new();
     result.read_to_string(&mut body)?;
 
-    Ok(serde_json::from_str(&body).context(format!("JSON was not well-formatted:\n{}", body))?)
+    serde_json::from_str(&body).context(format!("JSON was not well-formatted:\n{}", body))
 }
 
 fn get_registry_human_url(package_name: &str, package_version: &str) -> Result<url::Url> {

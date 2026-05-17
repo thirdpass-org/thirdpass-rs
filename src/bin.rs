@@ -1,5 +1,4 @@
 use thirdpass_core::extension::FromLib;
-use thirdpass_rs_lib;
 
 fn main() {
     let mut extension = thirdpass_rs_lib::RsExtension::new();
