@@ -29,12 +29,7 @@ impl thirdpass_core::extension::Extension for RsExtension {
     }
 
     fn review_target_policy(&self) -> thirdpass_core::extension::ReviewTargetPolicy {
-        thirdpass_core::extension::ReviewTargetPolicy {
-            excluded_exact_paths: vec![
-                ".cargo_vcs_info.json".to_string(),
-                "Cargo.lock".to_string(),
-            ],
-        }
+        thirdpass_core::extension::ReviewTargetPolicy::default()
     }
 
     /// Returns resolved dependencies for a crates.io package release.
@@ -217,11 +212,11 @@ mod tests {
     }
 
     #[test]
-    fn review_target_policy_skips_generated_cargo_metadata() {
+    fn review_target_policy_includes_cargo_metadata() {
         let policy = RsExtension::new().review_target_policy();
 
-        assert!(policy.excludes_exact_path(".cargo_vcs_info.json"));
-        assert!(policy.excludes_exact_path("Cargo.lock"));
+        assert!(!policy.excludes_exact_path(".cargo_vcs_info.json"));
+        assert!(!policy.excludes_exact_path("Cargo.lock"));
         assert!(!policy.excludes_exact_path("Cargo.toml"));
     }
 }
